@@ -1,0 +1,42 @@
+[project]
+name = "my-code-agent"
+version = "0.1.0"
+description = "学习型终端编程助手：LLM + 工具调用 + 可配置文件记忆"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "pydantic-ai",
+    "openai",
+    "rich",
+    "prompt_toolkit",
+    "questionary",
+    "mcp",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff",
+]
+
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = [
+    "interfaces",
+    "core",
+    "config",
+    "llm",
+    "agent",
+    "tool",
+    "memory",
+    "safety",
+    "session",
+    "ui",
+    "utils",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
