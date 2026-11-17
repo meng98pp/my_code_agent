@@ -1,11 +1,12 @@
 [project]
 name = "my-code-agent"
-version = "0.1.0"
-description = "学习型终端编程助手：LLM + 工具调用 + 可配置文件记忆"
+version = "0.1.1"
+description = "终端编程助手：LLM + 工具调用 + 可配置文件记忆"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "pydantic-ai",
+    "pydantic-settings",
     "openai",
     "rich",
     "prompt_toolkit",
@@ -18,25 +19,20 @@ dev = [
     "ruff",
 ]
 
+[project.scripts]
+my-code-agent = "my_code_agent.__main__:main"
+
 [build-system]
 requires = ["setuptools>=69"]
 build-backend = "setuptools.build_meta"
 
-[tool.setuptools]
-packages = [
-    "interfaces",
-    "core",
-    "config",
-    "llm",
-    "agent",
-    "tool",
-    "memory",
-    "safety",
-    "session",
-    "ui",
-    "utils",
-]
+[tool.setuptools.package-dir]
+"" = "src"
+
+[tool.setuptools.packages.find]
+where = ["src"]
 
 [tool.ruff]
 line-length = 100
 target-version = "py311"
+src = ["src", "tests"]
