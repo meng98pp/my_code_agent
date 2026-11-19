@@ -1,4 +1,6 @@
-"""终端 REPL、斜杠命令与渲染。
+"""终端交互。"""
 
-只依赖 core 门面与 interfaces，不直接调用 tool 内部函数。
-"""
+from .cli import main
+from .sink import ConsoleSink
+
+__all__ = ["ConsoleSink", "main"]

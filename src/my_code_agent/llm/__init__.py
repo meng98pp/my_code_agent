@@ -1,4 +1,5 @@
-"""模型客户端工厂（主 Agent 路径与旁路 JSON 请求）。
+"""模型客户端工厂。"""
 
-L2 起实现。只依赖 config，不依赖 tool / memory。
-"""
+from .client import build_chat_model
+
+__all__ = ["build_chat_model"]

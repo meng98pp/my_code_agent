@@ -1,4 +1,6 @@
-"""一轮对话编排门面（命令、压缩、召回、Agent 循环的顺序）。
+"""一轮对话编排。"""
 
-L2 起实现；只依赖各包抽象，不反向被 interfaces 依赖。
-"""
+from .app import App
+from .deps import EmptyToolContext
+
+__all__ = ["App", "EmptyToolContext"]

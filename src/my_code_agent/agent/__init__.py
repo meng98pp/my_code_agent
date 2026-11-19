@@ -1,4 +1,11 @@
-"""Agent 循环：模型请求、instructions、子 Agent 运行时。
+"""Agent 循环：模型请求与 instructions。"""
 
-独立于 tool 与 memory 的实现模块；通过 interfaces 交互。
-"""
+from .instructions import INSTRUCTIONS, render_project_context
+from .runner import PydanticAgentRunner, build_agent
+
+__all__ = [
+    "INSTRUCTIONS",
+    "PydanticAgentRunner",
+    "build_agent",
+    "render_project_context",
+]

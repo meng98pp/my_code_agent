@@ -1,5 +1,19 @@
-"""环境变量与路径配置。
+"""环境变量与路径配置。"""
 
-L2 将解析 CODE_AGENT_HOME / CODE_AGENT_MEMORY_ROOT。
-默认数据根为仓库内 .data/，不得使用 Path.home() 作为记忆默认根。
-"""
+from .errors import ConfigError, DataRootOnCDriveError, MissingAPIKeyError
+from .paths import AppPaths, default_home, repository_root, sanitize_cwd
+from .settings import Settings, load_settings, require_api_key, resolve_paths
+
+__all__ = [
+    "AppPaths",
+    "ConfigError",
+    "DataRootOnCDriveError",
+    "MissingAPIKeyError",
+    "Settings",
+    "default_home",
+    "load_settings",
+    "repository_root",
+    "require_api_key",
+    "resolve_paths",
+    "sanitize_cwd",
+]
