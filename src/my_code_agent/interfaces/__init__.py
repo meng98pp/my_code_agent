@@ -1,4 +1,82 @@
-"""跨层协议与 DTO。L1 起放置 Protocol；本层仅占位。
+"""跨层协议与 DTO。禁止 I/O、SDK、以及依赖 agent/tool/memory 实现。"""
 
-禁止：I/O、SDK、对 agent/tool/memory 实现的依赖。
-"""
+from .events import (
+    EVENT_ERROR,
+    EVENT_REMINDER,
+    EVENT_RETRY,
+    EVENT_TEXT,
+    EVENT_THINKING,
+    EVENT_TOOL_CALL,
+    EVENT_TOOL_RESULT,
+    AgentEvent,
+    EventSink,
+)
+from .memory_types import MemoryHeader, MemoryStore
+from .permissions import MODES, PermissionAction, PermissionDecision, PermissionMode
+from .runner import AgentRunner, AgentTurnResult
+from .session_types import Session
+from .tasking import (
+    ANSWER_MAX,
+    CIRCUIT_ERROR_LIMIT,
+    CIRCUIT_IDLE_LIMIT,
+    DEFAULT_MAX_FILE_BYTES,
+    MAX_CONSTRAINTS,
+    MAX_DISPATCHES_PER_GOAL,
+    MAX_EVIDENCE,
+    MAX_FOCUS_PATHS,
+    PARENT_SUMMARY_MAX,
+    REPORT_SCHEMAS,
+    REQUEST_LIMITS,
+    DispatchLedger,
+    SubagentCircuitOpen,
+    SubagentRuntime,
+    TaskSpec,
+    extract_json,
+    finalize_output,
+    normalize_report,
+    render_prompt,
+)
+from .tools import ToolContext, ToolHandler, ToolSpec
+
+__all__ = [
+    "ANSWER_MAX",
+    "CIRCUIT_ERROR_LIMIT",
+    "CIRCUIT_IDLE_LIMIT",
+    "DEFAULT_MAX_FILE_BYTES",
+    "EVENT_ERROR",
+    "EVENT_REMINDER",
+    "EVENT_RETRY",
+    "EVENT_TEXT",
+    "EVENT_THINKING",
+    "EVENT_TOOL_CALL",
+    "EVENT_TOOL_RESULT",
+    "MAX_CONSTRAINTS",
+    "MAX_DISPATCHES_PER_GOAL",
+    "MAX_EVIDENCE",
+    "MAX_FOCUS_PATHS",
+    "MODES",
+    "PARENT_SUMMARY_MAX",
+    "REPORT_SCHEMAS",
+    "REQUEST_LIMITS",
+    "AgentEvent",
+    "AgentRunner",
+    "AgentTurnResult",
+    "DispatchLedger",
+    "EventSink",
+    "MemoryHeader",
+    "MemoryStore",
+    "PermissionAction",
+    "PermissionDecision",
+    "PermissionMode",
+    "Session",
+    "SubagentCircuitOpen",
+    "SubagentRuntime",
+    "TaskSpec",
+    "ToolContext",
+    "ToolHandler",
+    "ToolSpec",
+    "extract_json",
+    "finalize_output",
+    "normalize_report",
+    "render_prompt",
+]
