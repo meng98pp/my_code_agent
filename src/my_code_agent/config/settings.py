@@ -6,14 +6,14 @@ import tomllib
 from pathlib import Path
 from typing import Any
 
-from pydantic import AliasChoices, Field
+from pydantic import AliasChoices, Field, ValidationError, field_validator
 from pydantic_settings import (
     BaseSettings,
     PydanticBaseSettingsSource,
     SettingsConfigDict,
 )
 
-from .errors import MissingAPIKeyError
+from .errors import ConfigError, MissingAPIKeyError
 from .paths import (
     AppPaths,
     default_home,
@@ -101,6 +101,60 @@ class Settings(BaseSettings):
         default=False,
         validation_alias=AliasChoices("CODE_AGENT_ALLOW_C_DRIVE", "allow_c_drive"),
     )
+    temperature: float | None = Field(
+        default=None,
+        validation_alias=AliasChoices("CODE_AGENT_TEMPERATURE", "temperature"),
+    )
+    top_p: float | None = Field(
+        default=None,
+        validation_alias=AliasChoices("CODE_AGENT_TOP_P", "top_p"),
+    )
+    max_tokens: int | None = Field(
+        default=None,
+        validation_alias=AliasChoices("CODE_AGENT_MAX_TOKENS", "max_tokens"),
+    )
+    timeout: float | None = Field(
+        default=None,
+        validation_alias=AliasChoices("CODE_AGENT_TIMEOUT", "timeout"),
+    )
+    thinking: bool | str | None = Field(
+        default=None,
+        validation_alias=AliasChoices("CODE_AGENT_THINKING", "thinking"),
+    )
+
+    @field_validator("thinking", mode="before")
+    @classmethod
+    def _parse_thinking(cls, value: object) -> bool | str | None:
+        if value is None or value == "":
+            return None
+        if isinstance(value, bool):
+            return value
+        text = str(value).strip().lower()
+        if text in ("true", "1", "on", "yes"):
+            return True
+        if text in ("false", "0", "off", "no"):
+            return False
+        allowed = ("minimal", "low", "medium", "high", "xhigh", "max")
+        if text in allowed:
+            return text
+        raise ValueError(
+            f"thinking 无效：{value!r}。可用 true/false，或 {', '.join(allowed)}"
+        )
+
+    def model_request_options(self) -> dict[str, Any]:
+        """未设置的项不出现，交给模型默认值。"""
+        options: dict[str, Any] = {}
+        if self.temperature is not None:
+            options["temperature"] = self.temperature
+        if self.top_p is not None:
+            options["top_p"] = self.top_p
+        if self.max_tokens is not None:
+            options["max_tokens"] = self.max_tokens
+        if self.timeout is not None:
+            options["timeout"] = self.timeout
+        if self.thinking is not None:
+            options["thinking"] = self.thinking
+        return options
 
     @classmethod
     def settings_customise_sources(
@@ -120,7 +174,10 @@ class Settings(BaseSettings):
 
 
 def load_settings() -> Settings:
-    return Settings()
+    try:
+        return Settings()
+    except ValidationError as exc:
+        raise ConfigError(str(exc)) from exc
 
 
 def require_api_key(settings: Settings) -> None:

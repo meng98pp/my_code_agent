@@ -8,11 +8,16 @@ from typing import Protocol
 
 @dataclass(frozen=True)
 class AgentEvent:
-    """一次可观察输出。kind 取值见模块常量。"""
+    """一次可观察输出。kind 取值见模块常量。
+
+    delta=True 时 text 是增量片段，UI 应追加打印且不要换行；
+    同一段结束后会再发一条 delta=False 的收尾事件（text 可为空）。
+    """
 
     kind: str
     text: str = ""
     tool_name: str = ""
+    delta: bool = False
 
 
 EVENT_THINKING = "thinking"

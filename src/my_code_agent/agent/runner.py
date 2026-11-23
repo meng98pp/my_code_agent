@@ -18,7 +18,7 @@ from my_code_agent.interfaces.events import (
 from my_code_agent.interfaces.runner import AgentTurnResult
 from my_code_agent.interfaces.session_types import Session
 from my_code_agent.interfaces.tools import ToolContext
-from my_code_agent.llm import build_chat_model
+from my_code_agent.llm import build_chat_model, build_model_settings
 
 from .instructions import INSTRUCTIONS, render_project_context
 
@@ -40,14 +40,20 @@ class PydanticAgentRunner:
         ctx: ToolContext,
     ) -> AgentTurnResult:
         del ctx
+        streamed_model = False
         async with self._agent.iter(
             user_input,
             message_history=session.history,
         ) as run:
-            node = run.next_node
-            while not isinstance(node, End):
-                node = await run.next(node)
-                self._emit_node(node)
+            async for node in run:
+                if isinstance(node, End):
+                    break
+                if Agent.is_model_request_node(node):
+                    streamed_model = await self._stream_model_request(node, run)
+                    continue
+                if Agent.is_call_tools_node(node):
+                    self._emit_call_tools(node, skip_model_text=streamed_model)
+                    streamed_model = False
 
         result = run.result
         history = list(result.all_messages())
@@ -63,17 +69,50 @@ class PydanticAgentRunner:
             output_tokens=out_tok,
         )
 
-    def _emit_node(self, node: Any) -> None:
-        if Agent.is_call_tools_node(node):
-            for part in node.model_response.parts:
+    async def _stream_model_request(self, node: Any, run: Any) -> bool:
+        """在 ModelRequestNode 上按 token 推送；成功则返回 True，避免 CallTools 再打一遍全文。"""
+        for part in getattr(getattr(node, "request", None), "parts", ()) or ():
+            kind = getattr(part, "part_kind", "")
+            if kind in ("tool-return", "retry-prompt"):
                 self._emit_part(part)
-            return
-        if Agent.is_model_request_node(node):
-            for part in node.request.parts:
-                kind = getattr(part, "part_kind", "")
-                if kind in ("tool-return", "retry-prompt"):
-                    self._emit_part(part)
 
+        stream_fn = getattr(node, "stream", None)
+        ctx = getattr(run, "ctx", None)
+        if stream_fn is None or ctx is None:
+            return False
+
+        saw_text = False
+        saw_thinking = False
+        async with stream_fn(ctx) as stream:
+            async for event in stream:
+                kind, chunk, extra = _stream_event_chunk(event)
+                if not kind or not chunk:
+                    continue
+                if kind == "thinking":
+                    saw_thinking = True
+                    self._sink.emit(AgentEvent(kind=EVENT_THINKING, text=chunk, delta=True))
+                elif kind == "text":
+                    saw_text = True
+                    self._sink.emit(AgentEvent(kind=EVENT_TEXT, text=chunk, delta=True))
+                elif kind == "tool-call":
+                    self._sink.emit(
+                        AgentEvent(
+                            kind=EVENT_TOOL_CALL,
+                            tool_name=extra,
+                            text=chunk,
+                        )
+                    )
+        if saw_thinking and not saw_text:
+            self._sink.emit(AgentEvent(kind=EVENT_THINKING, text="", delta=False))
+        if saw_text:
+            self._sink.emit(AgentEvent(kind=EVENT_TEXT, text="", delta=False))
+        return True
+
+    def _emit_call_tools(self, node: Any, *, skip_model_text: bool) -> None:
+        if skip_model_text:
+            return
+        for part in node.model_response.parts:
+            self._emit_part(part)
 
     def _emit_part(self, part: Any) -> None:
         kind = getattr(part, "part_kind", "")
@@ -103,13 +142,42 @@ class PydanticAgentRunner:
 
 def build_agent(settings) -> Agent:
     model = build_chat_model(settings)
-    agent = Agent(model, instructions=INSTRUCTIONS)
+    agent = Agent(
+        model,
+        instructions=INSTRUCTIONS,
+        model_settings=build_model_settings(settings),
+    )
 
     @agent.instructions
     def project_context() -> str:
         return render_project_context()
 
     return agent
+
+
+def _stream_event_chunk(event: Any) -> tuple[str, str, str]:
+    """从 pydantic-ai 流事件取出 (kind, text, extra)。未知事件返回空 kind。"""
+    part = getattr(event, "part", None)
+    if part is not None:
+        pk = getattr(part, "part_kind", "")
+        if pk == "thinking":
+            return "thinking", str(getattr(part, "content", "") or ""), ""
+        if pk == "text":
+            return "text", str(getattr(part, "content", "") or ""), ""
+        if pk == "tool-call":
+            return (
+                "tool-call",
+                str(getattr(part, "args", "") or ""),
+                str(getattr(part, "tool_name", "") or ""),
+            )
+    delta = getattr(event, "delta", None)
+    if delta is not None:
+        dk = getattr(delta, "part_delta_kind", "")
+        if dk == "thinking":
+            return "thinking", str(getattr(delta, "content_delta", "") or ""), ""
+        if dk == "text":
+            return "text", str(getattr(delta, "content_delta", "") or ""), ""
+    return "", "", ""
 
 
 def _usage_tokens(result: Any) -> tuple[int, int]:

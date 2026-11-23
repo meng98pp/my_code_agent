@@ -1,6 +1,6 @@
 # my_code_agent
 
-终端编程助手（可安装的 Python 发行包）。当前是 **L2 最小对话循环**：能聊天，还没有工具和记忆落盘。
+终端编程助手（可安装的 Python 发行包）。当前是 **L2 最小对话循环**：能聊天（终端流式打印），还没有工具和记忆落盘。
 
 切片只限制**范围**，不降低工程标准。方案见 [`技术总方案.md`](技术总方案.md)。
 
@@ -16,6 +16,12 @@ python -m my_code_agent
 
 无 `API_KEY` 时进程以退出码 2 失败，不会在 `import my_code_agent` 时崩溃。
 
+跑测试请在**本仓库根目录**执行（`tests/__init__.py` 会把 `src/` 加进路径）。当前解释器若已 `pip install -e .`，两种方式都可以：
+
+```powershell
+python -m unittest tests.test_l2_debug_callchain -v
+```
+
 ## 数据根与记忆根
 
 | 配置 | 作用 | 未设置时 |
@@ -25,6 +31,20 @@ python -m my_code_agent
 
 优先级：环境变量 > `settings.toml`（cwd 覆盖仓库 `config/settings.toml`）> 默认。  
 解析到 `C:\` 则启动失败（`CODE_AGENT_ALLOW_C_DRIVE=1` 仅测试用）。L4 才 mkdir。
+
+## 模型采样与思考
+
+改仓库内 [`config/settings.toml`](config/settings.toml)，或用环境变量覆盖。未写的项不传给 API，用模型默认值。
+
+| 配置 | 环境变量 | 说明 |
+|------|----------|------|
+| `temperature` | `CODE_AGENT_TEMPERATURE` | 0～2，越低越稳 |
+| `top_p` | `CODE_AGENT_TOP_P` | 核采样；一般不要和 temperature 一起改 |
+| `max_tokens` | `CODE_AGENT_MAX_TOKENS` | 单次回复上限 |
+| `timeout` | `CODE_AGENT_TIMEOUT` | 请求超时（秒） |
+| `thinking` | `CODE_AGENT_THINKING` | `true` / `false`，或 `low` / `medium` / `high` / `max` |
+
+`build_agent` 会把这些填进 pydantic-ai 的 `model_settings`。
 
 ## 进度
 

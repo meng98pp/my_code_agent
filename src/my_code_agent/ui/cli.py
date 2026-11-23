@@ -23,6 +23,10 @@ def main() -> None:
         raise SystemExit(2) from exc
 
     print(f"my_code_agent L2  {settings.model}")
+    opts = settings.model_request_options()
+    if opts:
+        bits = "  ".join(f"{k}={v}" for k, v in opts.items())
+        print(f"模型参数：{bits}")
     print(f"数据根：{paths.home}")
     print(f"记忆目录（本层不创建）：{paths.memory_dir()}")
     print("输入 /help 查看命令，/exit 退出。\n")

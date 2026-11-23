@@ -3,8 +3,14 @@
 from __future__ import annotations
 
 from pydantic_ai.models.openai import OpenAIChatModel
+from pydantic_ai.settings import ModelSettings
 
 from my_code_agent.config import Settings, require_api_key
+
+
+def build_model_settings(settings: Settings) -> ModelSettings | None:
+    options = settings.model_request_options()
+    return options or None  # type: ignore[return-value]
 
 
 def build_chat_model(settings: Settings) -> OpenAIChatModel:
