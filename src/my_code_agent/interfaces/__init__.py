@@ -36,7 +36,7 @@ from .tasking import (
     normalize_report,
     render_prompt,
 )
-from .tools import ToolContext, ToolHandler, ToolSpec
+from .tools import AgentDeps, ReadFileStatePort, ToolContext, ToolHandler, ToolSpec
 
 __all__ = [
     "ANSWER_MAX",
@@ -58,6 +58,7 @@ __all__ = [
     "PARENT_SUMMARY_MAX",
     "REPORT_SCHEMAS",
     "REQUEST_LIMITS",
+    "AgentDeps",
     "AgentEvent",
     "AgentRunner",
     "AgentTurnResult",
@@ -68,6 +69,7 @@ __all__ = [
     "PermissionAction",
     "PermissionDecision",
     "PermissionMode",
+    "ReadFileStatePort",
     "Session",
     "SubagentCircuitOpen",
     "SubagentRuntime",

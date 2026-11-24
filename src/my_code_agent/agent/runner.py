@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from typing import Any
 
 from pydantic_ai import Agent
@@ -17,7 +18,7 @@ from my_code_agent.interfaces.events import (
 )
 from my_code_agent.interfaces.runner import AgentTurnResult
 from my_code_agent.interfaces.session_types import Session
-from my_code_agent.interfaces.tools import ToolContext
+from my_code_agent.interfaces.tools import AgentDeps, ToolContext
 from my_code_agent.llm import build_chat_model, build_model_settings
 
 from .instructions import INSTRUCTIONS, render_project_context
@@ -39,11 +40,11 @@ class PydanticAgentRunner:
         session: Session,
         ctx: ToolContext,
     ) -> AgentTurnResult:
-        del ctx
         streamed_model = False
         async with self._agent.iter(
             user_input,
             message_history=session.history,
+            deps=ctx,
         ) as run:
             async for node in run:
                 if isinstance(node, End):
@@ -140,12 +141,14 @@ class PydanticAgentRunner:
             )
 
 
-def build_agent(settings) -> Agent:
+def build_agent(settings, tools: Sequence[Any] | None = None) -> Agent:
     model = build_chat_model(settings)
     agent = Agent(
         model,
         instructions=INSTRUCTIONS,
         model_settings=build_model_settings(settings),
+        tools=list(tools or ()),
+        deps_type=AgentDeps,
     )
 
     @agent.instructions

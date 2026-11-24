@@ -1,6 +1,6 @@
 """一轮对话编排。"""
 
 from .app import App
-from .deps import EmptyToolContext
+from .deps import AgentDeps
 
-__all__ = ["App", "EmptyToolContext"]
+__all__ = ["AgentDeps", "App"]

@@ -1,4 +1,4 @@
-"""一轮输入的编排：斜杠命令或交给 Agent。L2 不做压缩、@、记忆、jsonl。"""
+"""一轮输入的编排：斜杠命令或交给 Agent。L3a 接入 read_file，仍无压缩 / @ / 记忆 / jsonl。"""
 
 from __future__ import annotations
 
@@ -9,15 +9,15 @@ from my_code_agent.agent import PydanticAgentRunner, build_agent
 from my_code_agent.config import AppPaths, Settings
 from my_code_agent.interfaces.events import EventSink
 from my_code_agent.interfaces.session_types import Session
-
-from .deps import EmptyToolContext
+from my_code_agent.interfaces.tools import AgentDeps
+from my_code_agent.tool import ReadFileState, bootstrap_tools
 
 TurnAction = Literal["ok", "exit", "continue"]
 
-HELP_TEXT = """可用命令（L2）：
+HELP_TEXT = """可用命令（L3a）：
   /help   显示本说明
   /exit   退出
-更多命令（/status、/resume、/memory 等）在后续层提供。
+本层可用工具：read_file（读工作区文件，带行号）。写入、命令、记忆仍未开放。
 """
 
 
@@ -30,7 +30,12 @@ class App:
             session_id=str(uuid.uuid4()),
             model_name=settings.model,
         )
-        self._runner = PydanticAgentRunner(build_agent(settings), sink=sink)
+        self._read_file_state = ReadFileState()
+        registry = bootstrap_tools() #注册tool
+        self._runner = PydanticAgentRunner(
+            build_agent(settings, tools=registry.as_pydantic_tools()),
+            sink=sink,
+        )
 
     async def handle_line(self, raw: str) -> TurnAction:
         text = raw.strip()
@@ -38,7 +43,10 @@ class App:
             return "continue"
         if text.startswith("/"):
             return self._handle_command(text)
-        ctx = EmptyToolContext(session_id=self.session.session_id)
+        ctx = AgentDeps(
+            session_id=self.session.session_id,
+            read_file_state=self._read_file_state,
+        )
         await self._runner.run_turn(text, self.session, ctx)
         return "ok"
 

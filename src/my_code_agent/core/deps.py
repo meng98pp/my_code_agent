@@ -1,14 +1,7 @@
-"""L2 无工具，仍提供符合 ToolContext 协议的空依赖，避免 runner 走特殊分支。"""
+"""每轮注入的 AgentDeps。会话级 ReadFileState 由 App 持有，这里只打包。"""
 
 from __future__ import annotations
 
-from dataclasses import dataclass
-from pathlib import Path
+from my_code_agent.interfaces.tools import AgentDeps
 
-
-@dataclass
-class EmptyToolContext:
-    session_id: str
-    plan_file: Path | None = None
-    last_decision_source: str = ""
-    last_op_id: str | None = None
+__all__ = ["AgentDeps"]

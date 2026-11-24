@@ -1,6 +1,6 @@
 # my_code_agent
 
-终端编程助手（可安装的 Python 发行包）。当前是 **L2 最小对话循环**：能聊天（终端流式打印），还没有工具和记忆落盘。
+终端编程助手（可安装的 Python 发行包）。当前是 **L3a**：能聊天（流式），并能用 `read_file` 读工作区文件。还没有写入、命令和记忆落盘。
 
 切片只限制**范围**，不降低工程标准。方案见 [`技术总方案.md`](技术总方案.md)。
 
@@ -19,7 +19,7 @@ python -m my_code_agent
 跑测试请在**本仓库根目录**执行（`tests/__init__.py` 会把 `src/` 加进路径）。当前解释器若已 `pip install -e .`，两种方式都可以：
 
 ```powershell
-python -m unittest tests.test_l2_debug_callchain -v
+python -m unittest tests.test_l3a_read_file tests.test_l3a_registry -v
 ```
 
 ## 数据根与记忆根
@@ -52,5 +52,6 @@ python -m unittest tests.test_l2_debug_callchain -v
 |----|------|
 | L0 可安装骨架 | 完成 |
 | L1 核心接口 | 完成 |
-| L2 无工具对话 | 本层 |
-| L3 起工具 | 未开始 |
+| L2 无工具对话 | 完成 |
+| L3a 注册表 + read_file | 本层 |
+| L3b 起写入等 | 未开始 |
