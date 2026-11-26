@@ -107,10 +107,10 @@ def _require_fresh_read(state: ReadFileState, path: str, *, overwrite: bool = Fa
             raise ModelRetry(f"{path} 已存在，覆盖前请先用 read_file 读一遍，确认不会误删内容")
         raise ModelRetry(f"还没读过 {path}，请先用 read_file 读取它，再基于真实内容编辑")
     try:
-        current_mtime = os.path.getmtime(path)
+        current_mtime = os.path.getmtime(path)#获取文件的修改时间
     except FileNotFoundError as exc:
         raise ModelRetry(f"{path} 已不存在，无法写入") from exc
-    if current_mtime > record["timestamp"]:
+    if current_mtime > record["timestamp"]:#如果文件的修改时间大于记录的修改时间，则认为文件被改动过
         raise ModelRetry(f"{path} 在你读取之后被改动过，请重新 read_file 再写入")
     return dict(record)
 

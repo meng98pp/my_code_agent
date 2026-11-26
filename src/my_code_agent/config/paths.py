@@ -60,3 +60,6 @@ class AppPaths:
 
     def file_history_dir(self, session_id: str, cwd: Path | None = None) -> Path:
         return self.project_dir(cwd) / "file-history" / session_id
+
+    def jobs_dir(self, session_id: str) -> Path:
+        return self.home / "jobs" / session_id

@@ -1,6 +1,6 @@
 # my_code_agent
 
-终端编程助手（可安装的 Python 发行包）。当前是 **L3b**：能读、能改文件（先读后改），`/undo` 可撤销最近一次写入。还没有命令执行和记忆落盘。
+终端编程助手（可安装的 Python 发行包）。当前是 **L3c**：能读写文件，并能 `run_command`（前台超时 / 后台 job）。还没有五档权限和记忆落盘。
 
 切片只限制**范围**，不降低工程标准。方案见 [`技术总方案.md`](技术总方案.md)。
 
@@ -19,7 +19,7 @@ python -m my_code_agent
 跑测试请在**本仓库根目录**执行（`tests/__init__.py` 会把 `src/` 加进路径）。当前解释器若已 `pip install -e .`，两种方式都可以：
 
 ```powershell
-python -m unittest tests.test_l3b_file_ops tests.test_l3a_registry -v
+python -m unittest tests.test_l3c_command_policy tests.test_l3c_jobs -v
 ```
 
 ## 数据根与记忆根
@@ -54,5 +54,6 @@ python -m unittest tests.test_l3b_file_ops tests.test_l3a_registry -v
 | L1 核心接口 | 完成 |
 | L2 无工具对话 | 完成 |
 | L3a 注册表 + read_file | 完成 |
-| L3b write/edit + undo | 本层 |
-| L3c 起 shell/jobs | 未开始 |
+| L3b write/edit + undo | 完成 |
+| L3c shell + jobs | 本层 |
+| L3d 起五档权限 | 未开始 |

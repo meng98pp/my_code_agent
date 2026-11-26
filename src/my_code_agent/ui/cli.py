@@ -22,7 +22,7 @@ def main() -> None:
         print(str(exc), file=sys.stderr)
         raise SystemExit(2) from exc
 
-    print(f"my_code_agent L3b  {settings.model}")
+    print(f"my_code_agent L3c  {settings.model}")
     opts = settings.model_request_options()
     if opts:
         bits = "  ".join(f"{k}={v}" for k, v in opts.items())
@@ -38,12 +38,15 @@ def main() -> None:
 
 async def _loop(settings, paths) -> None:
     app = App(settings, paths, sink=ConsoleSink())
-    while True:
-        try:
-            line = input("❯ ")
-        except EOFError:
-            print()
-            return
-        action = await app.handle_line(line)
-        if action == "exit":
-            return
+    try:
+        while True:
+            try:
+                line = input("❯ ")
+            except EOFError:
+                print()
+                return
+            action = await app.handle_line(line)
+            if action == "exit":
+                return
+    finally:
+        app.close()
