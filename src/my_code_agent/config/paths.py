@@ -49,8 +49,14 @@ class AppPaths:
     memory_override: Path | None
     allow_c_drive: bool
 
+    def project_dir(self, cwd: Path | None = None) -> Path:
+        return self.home / "projects" / sanitize_cwd(cwd)
+
     def memory_dir(self, cwd: Path | None = None) -> Path:
         key = sanitize_cwd(cwd)
         if self.memory_override is not None:
             return self.memory_override / "projects" / key
-        return self.home / "projects" / key / "memory"
+        return self.project_dir(cwd) / "memory"
+
+    def file_history_dir(self, session_id: str, cwd: Path | None = None) -> Path:
+        return self.project_dir(cwd) / "file-history" / session_id

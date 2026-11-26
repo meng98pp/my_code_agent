@@ -22,7 +22,7 @@ def main() -> None:
         print(str(exc), file=sys.stderr)
         raise SystemExit(2) from exc
 
-    print(f"my_code_agent L3a  {settings.model}")
+    print(f"my_code_agent L3b  {settings.model}")
     opts = settings.model_request_options()
     if opts:
         bits = "  ".join(f"{k}={v}" for k, v in opts.items())
