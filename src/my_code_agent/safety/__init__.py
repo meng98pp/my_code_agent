@@ -4,5 +4,15 @@
 """
 
 from .command_policy import evaluate_command
+from .path_policy import check_write, is_memory_path, writable_roots
+from .permissions import PermissionState, compute_decision, denial_message
 
-__all__ = ["evaluate_command"]
+__all__ = [
+    "PermissionState",
+    "check_write",
+    "compute_decision",
+    "denial_message",
+    "evaluate_command",
+    "is_memory_path",
+    "writable_roots",
+]

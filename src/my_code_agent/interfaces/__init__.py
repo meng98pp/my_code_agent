@@ -2,6 +2,7 @@
 
 from .events import (
     EVENT_ERROR,
+    EVENT_PERMISSION,
     EVENT_REMINDER,
     EVENT_RETRY,
     EVENT_TEXT,
@@ -12,7 +13,14 @@ from .events import (
     EventSink,
 )
 from .memory_types import MemoryHeader, MemoryStore
-from .permissions import MODES, PermissionAction, PermissionDecision, PermissionMode
+from .permissions import (
+    MODES,
+    ApprovalChoice,
+    ApprovalPort,
+    PermissionAction,
+    PermissionDecision,
+    PermissionMode,
+)
 from .runner import AgentRunner, AgentTurnResult
 from .session_types import Session
 from .tasking import (
@@ -44,6 +52,7 @@ __all__ = [
     "CIRCUIT_IDLE_LIMIT",
     "DEFAULT_MAX_FILE_BYTES",
     "EVENT_ERROR",
+    "EVENT_PERMISSION",
     "EVENT_REMINDER",
     "EVENT_RETRY",
     "EVENT_TEXT",
@@ -59,6 +68,8 @@ __all__ = [
     "REPORT_SCHEMAS",
     "REQUEST_LIMITS",
     "AgentDeps",
+    "ApprovalChoice",
+    "ApprovalPort",
     "AgentEvent",
     "AgentRunner",
     "AgentTurnResult",

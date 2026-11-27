@@ -55,5 +55,5 @@ python -m unittest tests.test_l3c_command_policy tests.test_l3c_jobs -v
 | L2 无工具对话 | 完成 |
 | L3a 注册表 + read_file | 完成 |
 | L3b write/edit + undo | 完成 |
-| L3c shell + jobs | 本层 |
-| L3d 起五档权限 | 未开始 |
+| L3c shell + jobs | 完成 |
+| L3d 五档权限 | 本层 |

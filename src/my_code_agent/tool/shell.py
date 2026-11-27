@@ -20,7 +20,7 @@ FOREGROUND_TIMEOUT = 10
 
 
 def run_command_self_check(args: Mapping[str, Any]) -> str | None:
-    """deny 硬拦；只读 allow；其余 None（ask，L3d 再接模式/白名单）。"""
+    """deny 硬拦；只读 allow；其余 None（交给五档模式 / 会话白名单）。"""
     verdict = evaluate_command(str(args.get("command", "")))
     if verdict.action == "deny":
         return "deny"

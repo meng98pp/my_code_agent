@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass
-from typing import Literal
+from typing import Any, Literal, Protocol
 
 PermissionAction = Literal["allow", "ask", "deny"]
 PermissionMode = Literal["default", "acceptEdits", "plan", "auto", "bypass"]
+ApprovalChoice = Literal["once", "always", "deny"]
 
 MODES: tuple[PermissionMode, ...] = (
     "default",
@@ -24,3 +26,11 @@ class PermissionDecision:
     action: PermissionAction
     rule: str | None = None
     reason: str | None = None
+
+
+class ApprovalPort(Protocol):
+    """人工审批。实现放在 ui，safety/agent 只调 prompt。"""
+
+    async def prompt(self, tool_name: str, args: Mapping[str, Any]) -> ApprovalChoice:
+        """返回 once / always / deny。"""
+        ...

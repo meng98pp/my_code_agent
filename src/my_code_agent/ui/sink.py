@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from my_code_agent.interfaces.events import (
     EVENT_ERROR,
+    EVENT_PERMISSION,
     EVENT_TEXT,
     EVENT_THINKING,
     EVENT_TOOL_CALL,
@@ -27,6 +28,9 @@ class ConsoleSink:
         self._end_open_line()
         if event.kind == EVENT_ERROR:
             print(event.text)
+            return
+        if event.kind == EVENT_PERMISSION:
+            print(f"permission: {event.text}")
             return
         if event.kind == EVENT_TOOL_CALL:
             print(f"tool_call: {event.tool_name}")

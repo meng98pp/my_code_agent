@@ -21,6 +21,7 @@ from my_code_agent.interfaces.session_types import Session
 from my_code_agent.interfaces.tools import AgentDeps, ToolContext
 from my_code_agent.llm import build_chat_model, build_model_settings
 
+from .hooks import permission_hooks
 from .instructions import INSTRUCTIONS, render_project_context
 
 
@@ -149,7 +150,8 @@ def build_agent(settings, tools: Sequence[Any] | None = None) -> Agent:
         model_settings=build_model_settings(settings),
         tools=list(tools or ()),
         deps_type=AgentDeps,
-    )
+        capabilities=[permission_hooks()],
+    )#hooks登记
 
     @agent.instructions
     def project_context() -> str:

@@ -9,6 +9,7 @@ import sys
 from my_code_agent.config import ConfigError, load_settings, require_api_key, resolve_paths
 from my_code_agent.core import App
 
+from .approval import StdinApproval
 from .sink import ConsoleSink
 
 
@@ -22,13 +23,14 @@ def main() -> None:
         print(str(exc), file=sys.stderr)
         raise SystemExit(2) from exc
 
-    print(f"my_code_agent L3c  {settings.model}")
+    print(f"my_code_agent L3d  {settings.model}")
     opts = settings.model_request_options()
     if opts:
         bits = "  ".join(f"{k}={v}" for k, v in opts.items())
         print(f"模型参数：{bits}")
     print(f"数据根：{paths.home}")
     print(f"记忆目录（本层不创建）：{paths.memory_dir()}")
+    print("权限：/mode 切换（Shift+Tab 留到 L6）")
     print("输入 /help 查看命令，/exit 退出。\n")
     try:
         asyncio.run(_loop(settings, paths))
@@ -37,7 +39,7 @@ def main() -> None:
 
 
 async def _loop(settings, paths) -> None:
-    app = App(settings, paths, sink=ConsoleSink())
+    app = App(settings, paths, sink=ConsoleSink(), approval=StdinApproval())
     try:
         while True:
             try:

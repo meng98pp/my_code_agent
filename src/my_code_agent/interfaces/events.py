@@ -27,6 +27,7 @@ EVENT_TOOL_RESULT = "tool_result"
 EVENT_RETRY = "retry"
 EVENT_ERROR = "error"
 EVENT_REMINDER = "reminder"
+EVENT_PERMISSION = "permission"
 
 
 class EventSink(Protocol):

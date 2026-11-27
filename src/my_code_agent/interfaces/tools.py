@@ -67,3 +67,11 @@ class AgentDeps:
     job_registry: Any = None
     subagent_job: Any = None
     subagent_runtime: Any = None
+    permission_state: Any = None
+    approval: Any = None
+    writable_roots: Any = None
+    memory_root: Path | None = None
+    self_checks: Any = None
+    settings: Any = None
+    sink: Any = None
+    classifier: Any = None

@@ -25,6 +25,9 @@ class ToolRegistry:
     def specs(self) -> list[ToolSpec]:
         return list(self._specs.values())
 
+    def self_checks(self) -> dict[str, Any]:
+        return {spec.name: spec.self_check for spec in self._specs.values() if spec.self_check}
+
     def as_pydantic_tools(self) -> list[Any]:
         from pydantic_ai import Tool
 
